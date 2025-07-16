@@ -5,12 +5,17 @@ from pywheels.miscellaneous import greet
 
 def main():
     
+    print_helloworld()
+    greet("Jason Wei")
+    
     pywheels.set_language("en")
     
     print_helloworld()
+    greet("Jason Wei")
     
     pywheels.init_language()
     
+    print_helloworld()
     greet("Jason Wei")
     
     
