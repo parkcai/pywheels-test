@@ -2,7 +2,7 @@ from collections import namedtuple
 from unittest import TestCase
 from unittest import main as unittest_main
 from time import perf_counter
-from pywheels.structures import Ansatz
+from pywheels.blueprints import Ansatz
 from pywheels.task_runner import execute_python_script
 
 
