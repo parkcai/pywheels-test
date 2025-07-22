@@ -1,14 +1,19 @@
+import numexpr
+import numpy as np
 from collections import namedtuple
 from unittest import TestCase
 from unittest import main as unittest_main
 from time import perf_counter
 from pywheels.blueprints import Ansatz
+from pywheels.math_funcs import integral_1d_func
 from pywheels.task_runner import execute_python_script
 
 
 def main():
     
     test_apply_to()
+    
+    test_ansatz_add()
     
     test_check_format()
     
@@ -91,6 +96,65 @@ if __name__ == "__main__":
         f"在参数{best_params}下取到\n"
         f"（用时 {int(end-start)} 秒）"
     )
+    
+    
+def test_ansatz_add():
+    
+    ansatz1 = Ansatz(
+        expression = "param1 * exp(param2 * x)",
+        variables = ["x"],
+        functions = ["exp"],
+    )
+    
+    def numeric_ansatz_user(numeric_ansatz):
+        
+        f1 = lambda x: np.sin(x)
+        
+        f2 = lambda x: numexpr.evaluate(
+            ex = numeric_ansatz,
+            local_dict = {
+                "x": x
+            }
+        )
+        
+        error = integral_1d_func(
+            func = lambda x: np.square((f1(x) - f2(x))),
+            start = 0,
+            end = 2 * np.pi,
+        )
+        
+        return error
+    
+    param_ranges = [(-5.0, 5.0)]
+    trial_num = 10
+    
+    _, best_output = ansatz1.apply_to(
+        numeric_ansatz_user = numeric_ansatz_user,
+        param_ranges = param_ranges * ansatz1.get_param_num(),
+        trial_num = trial_num,
+        mode = "optimize",
+        do_minimize = True,
+    )
+    
+    print(f"拟设{ansatz1.to_expression()}的最小误差：{best_output:.4f}")
+    
+    ansatz2 = Ansatz(
+        expression = "param1 * exp(param2 * x)",
+        variables = ["x"],
+        functions = ["exp"],
+    )
+    
+    sum_ansatz = ansatz1 + ansatz2
+    
+    _, best_output = sum_ansatz.apply_to(
+        numeric_ansatz_user = numeric_ansatz_user,
+        param_ranges = param_ranges * sum_ansatz.get_param_num(),
+        trial_num = trial_num,
+        mode = "optimize",
+        do_minimize = True,
+    )
+    
+    print(f"拟设{sum_ansatz.to_expression()}的最小误差：{best_output:.4f}")
     
     
 def test_check_format():
