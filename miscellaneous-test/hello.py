@@ -1,6 +1,6 @@
 import pywheels
-from pywheels.miscellaneous import print_helloworld
-from pywheels.miscellaneous import greet
+from pywheels.miscellaneous.hello import print_helloworld
+from pywheels.miscellaneous.hello import greet
 
 
 def main():

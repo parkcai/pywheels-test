@@ -1,4 +1,4 @@
-from pywheels.llm_tools import get_answer
+from pywheels.llm_tools.get_answer import get_answer
 
 
 def main():

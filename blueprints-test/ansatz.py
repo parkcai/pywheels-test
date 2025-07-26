@@ -4,9 +4,9 @@ from collections import namedtuple
 from unittest import TestCase
 from unittest import main as unittest_main
 from time import perf_counter
-from pywheels.blueprints import Ansatz
-from pywheels.math_funcs import integral_1d_func
-from pywheels.task_runner import execute_python_script
+from pywheels.blueprints.ansatz import Ansatz
+from pywheels.math_funcs.integral import integral_1d_func
+from pywheels.task_runner.task_runner import execute_python_script
 
 
 def main():

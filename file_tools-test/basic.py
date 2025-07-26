@@ -1,7 +1,7 @@
 from time import sleep
-from pywheels.file_tools import guarantee_file_exist
-from pywheels.file_tools import copy_file
-from pywheels.file_tools import delete_file
+from pywheels.file_tools.basic import guarantee_file_exist
+from pywheels.file_tools.basic import copy_file
+from pywheels.file_tools.basic import delete_file
 
 
 def main():
