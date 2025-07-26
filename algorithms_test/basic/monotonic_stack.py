@@ -8,8 +8,8 @@ from typing import runtime_checkable
 from collections import namedtuple
 from unittest import TestCase
 from unittest import main as unittest_main
-from pywheels.algorithms.basic import next_greater_element
-from pywheels.algorithms.basic import next_smaller_element
+from pywheels.algorithms.basic.monotonic_stack import next_greater_element
+from pywheels.algorithms.basic.monotonic_stack import next_smaller_element
 
 
 NextQualifiedElementCase = namedtuple(
