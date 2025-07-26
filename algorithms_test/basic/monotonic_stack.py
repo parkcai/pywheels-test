@@ -185,13 +185,13 @@ next_qualified_element_cases = [
 ]
 
 
-class TestCheckAnsatzFormat(TestCase):
+class TestNextQualifiedElement(TestCase):
     
     def test_next_qualified_element(self):
         
         for i, case in enumerate(next_qualified_element_cases):
             
-            with self.subTest(i=i):
+            with self.subTest(i = i):
                 
                 if case.qualified_means_greater:
                     result = next_greater_element(
