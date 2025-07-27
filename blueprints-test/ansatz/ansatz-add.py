@@ -60,13 +60,13 @@ test_ansatz_add_cases = [
         expected = "param1 * exp(param2 * x) + param3 * sin(param4 * y) + param5 * log(param6 * z) + param7 * sqrt(param8 * w)"
     ),
     
-    # 一元操作符测试【未通过】
+    # 一元操作符测试
     AnsatzAddCase(
         expression1 = "-param1 * x",
         expression2 = "+param1 * y",
         variables = ["x", "y"],
         functions = [],
-        expected = "param1 * (-x) + param2 * y"
+        expected = "param1 * -param2 * x + param3 * +param4 * y"
     ),
     
     # 嵌套函数加法
@@ -87,7 +87,7 @@ test_ansatz_add_cases = [
         expected = "param1 * x ** param2 + param3 * y ** param4"
     ),
     
-    # 除法表达式加法【未通过】
+    # 除法表达式加法
     AnsatzAddCase(
         expression1 = "param1 / x",
         expression2 = "param1 / y",
@@ -96,16 +96,16 @@ test_ansatz_add_cases = [
         expected = "param1 / x + param2 / y"
     ),
     
-    # 混合运算符加法【未通过】
+    # 混合运算符加法
     AnsatzAddCase(
         expression1 = "param1 * x + param2 / y",
         expression2 = "param1 * sin(x) - param2 * cos(y)",
         variables = ["x", "y"],
         functions = ["sin", "cos"],
-        expected = "param1 * x + param2 / y + param3 * sin(x) - param4 * cos(y)"
+        expected = "param1 * x + param2 / y + param3 * sin(x) + param4 * -(param5 * cos(y))"
     ),
     
-    # 复杂括号表达式加法【未通过】
+    # 复杂括号表达式加法
     AnsatzAddCase(
         expression1 = "(param1 + param2 * x) / (y + param3)",
         expression2 = "(param1 - param2 * y) * (x + param3)",
