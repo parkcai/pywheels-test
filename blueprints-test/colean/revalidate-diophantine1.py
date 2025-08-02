@@ -1,96 +1,6 @@
-from typing import List
 from os.path import sep as seperator
 from pywheels.blueprints.colean import CoLeanRechecker
-
-
-def pow_mod_eq_zero(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("pow_mod_eq_zero", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def observe_mod_cycle(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("observe_mod_cycle", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def utilize_mod_cycle(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("utilize_mod_cycle", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def exhaust_mod_cycle(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("exhaust_mod_cycle", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def compute_mod_add(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("compute_mod_add", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def compute_mod_sub(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("compute_mod_sub", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def transcendental_diophantine1_double_enumeration(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("transcendental_diophantine1_double_enumeration", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def transcendental_diophantine1_front_enumeration(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("transcendental_diophantine1_front_enumeration", prop, ", ".join(verified_facts)))
-    
-    return True
-
-
-def transcendental_diophantine1_back_enumeration(
-    prop: str,
-    verified_facts: List[str],
-)-> bool:
-    
-    input(("transcendental_diophantine1_back_enumeration", prop, ", ".join(verified_facts)))
-    
-    return True
+from .revalidate_testcases.transcendental_diophantine1.revalidators import *
 
 
 def main():
@@ -114,7 +24,7 @@ def main():
     valid = diophantine_lean_proxy.revalidate(
         lean_code = (
             f"blueprints-test{seperator}colean{seperator}"
-            f"revalidate-testcases{seperator}transcendental_diophantine1.lean"
+            f"revalidate_testcases{seperator}transcendental_diophantine1{seperator}lean_code.lean"
         ),
     )
     
