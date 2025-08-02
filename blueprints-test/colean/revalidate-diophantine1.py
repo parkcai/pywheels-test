@@ -8,7 +8,7 @@ def pow_mod_eq_zero(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("pow_mod_eq_zero", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -18,7 +18,7 @@ def observe_mod_cycle(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("observe_mod_cycle", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -28,7 +28,7 @@ def utilize_mod_cycle(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("utilize_mod_cycle", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -38,7 +38,7 @@ def exhaust_mod_cycle(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("exhaust_mod_cycle", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -48,7 +48,7 @@ def compute_mod_add(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("compute_mod_add", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -58,7 +58,7 @@ def compute_mod_sub(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("compute_mod_sub", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -68,7 +68,7 @@ def transcendental_diophantine1_double_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("transcendental_diophantine1_double_enumeration", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -78,7 +78,7 @@ def transcendental_diophantine1_front_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("transcendental_diophantine1_front_enumeration", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -88,7 +88,7 @@ def transcendental_diophantine1_back_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    input((prop, ", ".join(verified_facts)))
+    input(("transcendental_diophantine1_back_enumeration", prop, ", ".join(verified_facts)))
     
     return True
 
@@ -114,7 +114,7 @@ def main():
     valid = diophantine_lean_proxy.revalidate(
         lean_code = (
             f"blueprints-test{seperator}colean{seperator}"
-            f"revalidate-testcases{seperator}test.lean"
+            f"revalidate-testcases{seperator}transcendental_diophantine1.lean"
         ),
     )
     
