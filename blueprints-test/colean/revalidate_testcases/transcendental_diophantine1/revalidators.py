@@ -225,25 +225,50 @@ def exhaust_mod_cycle(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
+    try:
     
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
-    
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"exhaust_mod_cycle: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+        if prop != "False": return False
+        
+        if len(verified_facts) != 3: return False
+        all_facts = ", ".join(verified_facts)
+        
+        # <pow> % 1 = 0, <pow2> >= 1, 
+        # List.Mem (<base> ^ <pow3> % <mod>) [<value>, <value>, ..., <value>]
+        facts_pattern = re.compile(
+            r"\s*(\w+)\s*%\s*1\s*=\s*0, "
+            r"\s*(\w+)\s*>=\s*1\s*, "
+            r"\s*List.Mem\s+\(\s*(\d+)\s*\^\s*(\w+)\s*%\s*(\d+)\)\s+\[([\d\s,]+)\]\s*"
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        _pow, _pow2, base, _pow3, mod, values_string = \
+            facts_match.group(1), facts_match.group(2), int(facts_match.group(3)), \
+                facts_match.group(4), int(facts_match.group(5)), facts_match.group(6)
+        values = [int(s.strip()) for s in values_string.split(",") if s.strip()]
+        
+        if _pow2 != _pow or _pow3 != _pow: return False
+        if base < 1 or mod < 2 or math.gcd(base, mod) != 1: return False
+        if any([((value < 0) or (value >= mod)) for value in values]): return False
+        
+        _, seen = _get_modular_multiplicative_cycle(base, mod)
+        
+        result = all([value not in seen for value in values])
+        
+        if not result: return False
+
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"exhaust_mod_cycle: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
+
+    except Exception as error:
+        print(error)
+        return False
 
 
 def compute_mod_add(
@@ -251,26 +276,65 @@ def compute_mod_add(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
-    
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
-    
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"compute_mod_add: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+    try:
+        
+        # List.Mem (<c> ^ <y> % <mod>) [<value>, <value>, ..., <value>]
+        prop_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\d+)\s*\^\s*(\w+)\s*%\s*(\d+)\)\s+\[([\d\s,]+)\]\s*"
+        )
+        prop_match = prop_pattern.fullmatch(prop)
+        if not prop_match: return False
+        
+        c, y, mod, values_string = \
+            int(prop_match.group(1)), prop_match.group(2), \
+                int(prop_match.group(3)), prop_match.group(4)
+        result_values = [int(s.strip()) for s in values_string.split(",") if s.strip()]
 
+        if len(verified_facts) != 2: return False
+        all_facts = ", ".join(verified_facts)
+        
+        # List.Mem (<a> ^ <x> % <mod2>) [<value>, <value>, ..., <value>], 
+        # a2 ^ x2 + b = c2 ^ y2
+        facts_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\d+)\s*\^\s*(\w+)\s*%\s*(\d+)\)\s+\[([\d\s,]+)\]\s*, "
+            r"\s*(\d+)\s*\^\s*(\w+)\s*\+\s*(\d+)\s*=\s*(\d+)\s*\^\s*(\w+)\s*",
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        a, x, mod2, values_string, a2, x2, b, c2, y2 = \
+            int(facts_match.group(1)), facts_match.group(2), int(facts_match.group(3)), \
+                facts_match.group(4), int(facts_match.group(5)), facts_match.group(6), \
+                    int(facts_match.group(7)), int(facts_match.group(8)), facts_match.group(9)
+        values = [int(s.strip()) for s in values_string.split(",") if s.strip()]
+                    
+        if a < 2 or b < 1 or c < 2: return False
+        if a2 != a or c2 != c or mod2 != mod: return False
+        if x2 != x or y2 != y: return False
+        if mod < 1: return False
+        
+        true_result_values = [
+            (value + b) % mod
+            for value in values
+        ]
+        
+        result = (set(result_values) == set(true_result_values))
+        
+        if not result: return False
+        
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"compute_mod_add: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
+
+    except Exception as error:
+        print(error)
+        return False
+    
 
 def compute_mod_sub(
     prop: str,
