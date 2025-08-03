@@ -228,7 +228,7 @@ Therefore, x < 3.
 Further examination shows that (x, y) = (2, 4).
 -/
 theorem diophantine1_3_7_2 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 3 ^ x + 7 = 2 ^ y) :
-  (x, y) = (2, 4)
+  List.Mem (x, y) [(2, 4)]
   := by
   have h4 : x % 1 = 0 := by omega
   have h5 : y % 1 = 0 := by omega
@@ -259,7 +259,7 @@ theorem diophantine1_3_7_2 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   ] "exhaust_mod_cycle"
   apply False.elim h12
   have h15 : x <= 2 := by omega
-  have h16 := Claim ((x, y) = (2, 4)) [
+  have h16 := Claim (List.Mem (x, y) [(2, 4)]) [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
     {prop := y % 1 = 0, proof := h5},
