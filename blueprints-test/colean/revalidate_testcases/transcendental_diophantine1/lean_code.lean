@@ -4,7 +4,7 @@
 -- Eureka Lab, Zeyu Cai, 25/08/01.
 
 
--- Claim Section
+-- Claim Structure
 structure VerifiedFact where
   prop : Prop
   proof : prop
