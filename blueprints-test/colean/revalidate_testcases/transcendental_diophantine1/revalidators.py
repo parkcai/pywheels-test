@@ -16,7 +16,12 @@ __all__ = [
 ]
 
 
+_verbose: bool = False
+
+
 def _get_modular_multiplicative_cycle(base, mod):
+    
+    if base < 1 or mod < 2 or math.gcd(base, mod) != 1: raise ValueError
     
     base = base % mod
     
@@ -103,15 +108,16 @@ def pow_mod_eq_zero(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"pow_mod_eq_zero: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"pow_mod_eq_zero: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -170,15 +176,16 @@ def observe_mod_cycle(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"observe_mod_cycle: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"observe_mod_cycle: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -239,15 +246,16 @@ def utilize_mod_cycle(
 
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"utilize_mod_cycle: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"utilize_mod_cycle: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -290,15 +298,16 @@ def exhaust_mod_cycle(
 
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"exhaust_mod_cycle: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"exhaust_mod_cycle: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
 
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -355,15 +364,16 @@ def compute_mod_add(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"compute_mod_add: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"compute_mod_add: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
 
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
     
 
@@ -420,15 +430,16 @@ def compute_mod_sub(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"compute_mod_sub: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"compute_mod_sub: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
 
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -495,15 +506,16 @@ def transcendental_diophantine1_double_enumeration(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"transcendental_diophantine1_double_enumeration: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"transcendental_diophantine1_double_enumeration: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -569,15 +581,16 @@ def transcendental_diophantine1_front_enumeration(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"transcendental_diophantine1_front_enumeration: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"transcendental_diophantine1_front_enumeration: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
 
 
@@ -614,9 +627,9 @@ def transcendental_diophantine1_back_enumeration(
         if y2 != y or y3 != y or y4 != y: return False
         if a < 2 or b < 1 or c < 2: return False
         if y_max < 0: return False
-        
+
         true_solutions = _exhaust_diophantine1(a, b, c, None, y_max)
-    
+
         # List.Mem (<x5>, <y5>) [(<x_value>, <y_value>), ..., (<x_value>, <y_value>)]
         prop_pattern = re.compile(
             r"\s*List.Mem\s+\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+\[\s*((?:\(\s*\d+\s*,\s*\d+\s*\)\s*,?\s*)+)\s*\]\s*"
@@ -628,9 +641,9 @@ def transcendental_diophantine1_back_enumeration(
             solutions = []
             
         else:
+            
             x5, y5, tuple_list_str = prop_match.groups()
             if x5 != x or y5 != y: return False
-            
             tuple_pattern = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*\)")
             solutions = [
                 (int(m.group(1)), int(m.group(2)))
@@ -643,13 +656,16 @@ def transcendental_diophantine1_back_enumeration(
         
         lined_facts = "\n".join(verified_facts)
         
-        print(
-            f"transcendental_diophantine1_back_enumeration: prop {prop} has been revalidated "
-            f"by the following verified facts:\n{lined_facts}"
-        )
+        if _verbose:
+            print(
+                f"transcendental_diophantine1_back_enumeration: prop {prop} has been revalidated "
+                f"by the following verified facts:\n{lined_facts}"
+            )
         
         return True
     
     except Exception as error:
-        print(error)
+        if _verbose: print(error)
         return False
+    
+

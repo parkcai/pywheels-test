@@ -5,7 +5,10 @@ from .revalidate_testcases.transcendental_diophantine1.revalidators import *
 
 def main():
     
-    diophantine_lean_proxy = CoLeanRechecker()
+    diophantine_lean_proxy = CoLeanRechecker(
+        claim_keyword = "Claim",
+        prop_field = "prop",
+    )
     
     diophantine_lean_proxy.add_revalidators(
         revalidators = [

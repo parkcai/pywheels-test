@@ -101,7 +101,7 @@ Therefore, y < 3.
 Further examination shows that (x, y) = (1, 1).
 -/
 theorem diophantine1_7_3_10 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 7 ^ x + 3 = 10 ^ y) :
-  (x, y) = (1, 1)
+  List.Mem (x, y) [(1, 1)]
   := by
   have h4 : x % 1 = 0 := by omega
   have h5 : y % 1 = 0 := by omega
@@ -118,7 +118,7 @@ theorem diophantine1_7_3_10 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : y <= 2 := by omega
-  have h8 := Claim ((x, y) = (1, 1)) [
+  have h8 := Claim (List.Mem (x, y) [(1, 1)]) [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
     {prop := y % 1 = 0, proof := h5},
