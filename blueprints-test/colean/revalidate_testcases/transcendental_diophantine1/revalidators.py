@@ -34,6 +34,37 @@ def _get_modular_multiplicative_cycle(base, mod):
     return cycle, seen
 
 
+def _exhaust_diophantine1(a, b, c, x_max, y_max):
+    
+    if x_max is None and y_max is None: raise ValueError
+    if x_max is not None and x_max < 0: raise ValueError
+    if y_max is not None and y_max < 0: raise ValueError
+    if a < 2 or b < 1 or c < 2: raise ValueError
+    
+    result = []
+    
+    current_a = a
+    current_c = c
+    current_x = 1
+    current_y = 1
+    
+    while (x_max is not None and y_max is not None and (current_x <= x_max or current_y <= y_max)) or \
+        (x_max is None and y_max is not None and current_y <= y_max) or \
+        (x_max is not None and y_max is None and current_x <= x_max):
+            
+        if current_a + b == current_c:
+            result.append((current_x, current_y))
+            current_a *= a; current_x += 1
+            
+        elif current_a + b < current_c:
+            current_a *= a; current_x += 1
+            
+        else:
+            current_c *= c; current_y += 1
+    
+    return result
+
+
 def pow_mod_eq_zero(
     prop: str,
     verified_facts: List[str],
@@ -341,25 +372,64 @@ def compute_mod_sub(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
-    
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
-    
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"compute_mod_sub: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+    try:
+        
+        # List.Mem (<a> ^ <x> % <mod>) [<value>, <value>, ..., <value>]
+        prop_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\d+)\s*\^\s*(\w+)\s*%\s*(\d+)\)\s+\[([\d\s,]+)\]\s*"
+        )
+        prop_match = prop_pattern.fullmatch(prop)
+        if not prop_match: return False
+        
+        a, x, mod, values_string = \
+            int(prop_match.group(1)), prop_match.group(2), \
+                int(prop_match.group(3)), prop_match.group(4)
+        result_values = [int(s.strip()) for s in values_string.split(",") if s.strip()]
+
+        if len(verified_facts) != 2: return False
+        all_facts = ", ".join(verified_facts)
+        
+        # List.Mem (<c> ^ <y> % <mod2>) [<value>, <value>, ..., <value>], 
+        # a2 ^ x2 + b = c2 ^ y2
+        facts_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\d+)\s*\^\s*(\w+)\s*%\s*(\d+)\)\s+\[([\d\s,]+)\]\s*, "
+            r"\s*(\d+)\s*\^\s*(\w+)\s*\+\s*(\d+)\s*=\s*(\d+)\s*\^\s*(\w+)\s*"
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        c, y, mod2, values_string, a2, x2, b, c2, y2 = \
+            int(facts_match.group(1)), facts_match.group(2), int(facts_match.group(3)), \
+                facts_match.group(4), int(facts_match.group(5)), facts_match.group(6), \
+                    int(facts_match.group(7)), int(facts_match.group(8)), facts_match.group(9)
+        values = [int(s.strip()) for s in values_string.split(",") if s.strip()]
+                    
+        if a < 2 or b < 1 or c < 2: return False
+        if a2 != a or c2 != c or mod2 != mod: return False
+        if x2 != x or y2 != y: return False
+        if mod < 1: return False
+        
+        true_result_values = [
+            (value - b) % mod
+            for value in values
+        ]
+        
+        result = (set(result_values) == set(true_result_values))
+        
+        if not result: return False
+        
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"compute_mod_sub: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
+
+    except Exception as error:
+        print(error)
+        return False
 
 
 def transcendental_diophantine1_double_enumeration(
@@ -367,25 +437,74 @@ def transcendental_diophantine1_double_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
+    try:
+        
+        if len(verified_facts) != 6: return False
+        all_facts = ", ".join(verified_facts)
+        
+        facts_pattern = re.compile(
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <x> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <x2> >= 1, 
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <y> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <y2> >= 1, 
+            # <a> ^ <x3> + <b> = <c> ^ <y3>
+            r"\s*(\d+)\s*\^\s*(\w+)\s*\+\s*(\d+)\s*=\s*(\d+)\s*\^\s*(\w+)\s*, "
+            # Or (<x4> <= <x_max>) (<y4> <= y_max)
+            r"\s*Or\s+\(\s*(\w+)\s*<=\s*(\d+)\s*\)\s+\(\s*(\w+)\s*<=\s*(\d+)\s*\)\s*"        
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        x, x2, y, y2, a, x3, b, c, y3, x4, x_max, y4, y_max = \
+            facts_match.group(1), facts_match.group(2), facts_match.group(3), \
+            facts_match.group(4), int(facts_match.group(5)), facts_match.group(6), \
+            int(facts_match.group(7)), int(facts_match.group(8)), facts_match.group(9), \
+            facts_match.group(10), int(facts_match.group(11)), facts_match.group(12), \
+            int(facts_match.group(13)), 
+            
+        if x2 != x or x3 != x or x4 != x: return False
+        if y2 != y or y3 != y or y4 != y: return False
+        if a < 2 or b < 1 or c < 2: return False
+        if x_max < 0 or y_max < 0: return False
+        
+        true_solutions = _exhaust_diophantine1(a, b, c, x_max, y_max)
     
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
+        # List.Mem (<x5>, <y5>) [(<x_value>, <y_value>), ..., (<x_value>, <y_value>)]
+        prop_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+\[\s*((?:\(\s*\d+\s*,\s*\d+\s*\)\s*,?\s*)+)\s*\]\s*"
+        )
+        prop_match = prop_pattern.fullmatch(prop)
+        
+        if not prop_match:
+            if prop != "False": return False
+            solutions = []
+            
+        else:
+            x5, y5, tuple_list_str = prop_match.groups()
+            if x5 != x or y5 != y: return False
+            
+            tuple_pattern = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*\)")
+            solutions = [
+                (int(m.group(1)), int(m.group(2)))
+                for m in tuple_pattern.finditer(tuple_list_str)
+            ]
+            
+        result = (set(solutions) == set(true_solutions))
+        
+        if not result: return False
+        
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"transcendental_diophantine1_double_enumeration: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
     
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"transcendental_diophantine1_double_enumeration: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+    except Exception as error:
+        print(error)
+        return False
 
 
 def transcendental_diophantine1_front_enumeration(
@@ -393,25 +512,73 @@ def transcendental_diophantine1_front_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
+    try:
+        
+        if len(verified_facts) != 6: return False
+        all_facts = ", ".join(verified_facts)
+        
+        facts_pattern = re.compile(
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <x> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <x2> >= 1, 
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <y> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <y2> >= 1, 
+            # <a> ^ <x3> + <b> = <c> ^ <y3>
+            r"\s*(\d+)\s*\^\s*(\w+)\s*\+\s*(\d+)\s*=\s*(\d+)\s*\^\s*(\w+)\s*, "
+            # <x4> <= <x_max>
+            r"\s*(\w+)\s*<=\s*(\d+)\s*"        
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        x, x2, y, y2, a, x3, b, c, y3, x4, x_max = \
+            facts_match.group(1), facts_match.group(2), facts_match.group(3), \
+            facts_match.group(4), int(facts_match.group(5)), facts_match.group(6), \
+            int(facts_match.group(7)), int(facts_match.group(8)), facts_match.group(9), \
+            facts_match.group(10), int(facts_match.group(11))
+            
+        if x2 != x or x3 != x or x4 != x: return False
+        if y2 != y or y3 != y : return False
+        if a < 2 or b < 1 or c < 2: return False
+        if x_max < 0: return False
+        
+        true_solutions = _exhaust_diophantine1(a, b, c, x_max, None)
     
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
+        # List.Mem (<x5>, <y5>) [(<x_value>, <y_value>), ..., (<x_value>, <y_value>)]
+        prop_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+\[\s*((?:\(\s*\d+\s*,\s*\d+\s*\)\s*,?\s*)+)\s*\]\s*"
+        )
+        prop_match = prop_pattern.fullmatch(prop)
+        
+        if not prop_match:
+            if prop != "False": return False
+            solutions = []
+            
+        else:
+            x5, y5, tuple_list_str = prop_match.groups()
+            if x5 != x or y5 != y: return False
+            
+            tuple_pattern = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*\)")
+            solutions = [
+                (int(m.group(1)), int(m.group(2)))
+                for m in tuple_pattern.finditer(tuple_list_str)
+            ]
+            
+        result = (set(solutions) == set(true_solutions))
+        
+        if not result: return False
+        
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"transcendental_diophantine1_front_enumeration: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
     
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"transcendental_diophantine1_front_enumeration: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+    except Exception as error:
+        print(error)
+        return False
 
 
 def transcendental_diophantine1_back_enumeration(
@@ -419,22 +586,70 @@ def transcendental_diophantine1_back_enumeration(
     verified_facts: List[str],
 )-> bool:
     
-    # prop_pattern = 
-    # prop_match = 
+    try:
+        
+        if len(verified_facts) != 6: return False
+        all_facts = ", ".join(verified_facts)
+        
+        facts_pattern = re.compile(
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <x> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <x2> >= 1, 
+            r"\s*(\w+)\s*%\s*1\s*=\s*0\s*, " # <y> % 1 = 0,
+            r"\s*(\w+)\s*>=\s*1\s*, "        # <y2> >= 1, 
+            # <a> ^ <x3> + <b> = <c> ^ <y3>
+            r"\s*(\d+)\s*\^\s*(\w+)\s*\+\s*(\d+)\s*=\s*(\d+)\s*\^\s*(\w+)\s*, "
+            # <y4> <= <y_max>
+            r"\s*(\w+)\s*<=\s*(\d+)\s*"        
+        )
+        facts_match = facts_pattern.fullmatch(all_facts)
+        if not facts_match: return False
+        
+        x, x2, y, y2, a, x3, b, c, y3, y4, y_max = \
+            facts_match.group(1), facts_match.group(2), facts_match.group(3), \
+            facts_match.group(4), int(facts_match.group(5)), facts_match.group(6), \
+            int(facts_match.group(7)), int(facts_match.group(8)), facts_match.group(9), \
+            facts_match.group(10), int(facts_match.group(11))
+            
+        if x2 != x or x3 != x: return False
+        if y2 != y or y3 != y or y4 != y: return False
+        if a < 2 or b < 1 or c < 2: return False
+        if y_max < 0: return False
+        
+        true_solutions = _exhaust_diophantine1(a, b, c, None, y_max)
     
-    # if len(verified_facts) != 2: return False
-    # all_facts = ", ".join(verified_facts)
+        # List.Mem (<x5>, <y5>) [(<x_value>, <y_value>), ..., (<x_value>, <y_value>)]
+        prop_pattern = re.compile(
+            r"\s*List.Mem\s+\(\s*(\w+)\s*,\s*(\w+)\s*\)\s+\[\s*((?:\(\s*\d+\s*,\s*\d+\s*\)\s*,?\s*)+)\s*\]\s*"
+        )
+        prop_match = prop_pattern.fullmatch(prop)
+        
+        if not prop_match:
+            if prop != "False": return False
+            solutions = []
+            
+        else:
+            x5, y5, tuple_list_str = prop_match.groups()
+            if x5 != x or y5 != y: return False
+            
+            tuple_pattern = re.compile(r"\(\s*(\d+)\s*,\s*(\d+)\s*\)")
+            solutions = [
+                (int(m.group(1)), int(m.group(2)))
+                for m in tuple_pattern.finditer(tuple_list_str)
+            ]
+            
+        result = (set(solutions) == set(true_solutions))
+        
+        if not result: return False
+        
+        lined_facts = "\n".join(verified_facts)
+        
+        print(
+            f"transcendental_diophantine1_back_enumeration: prop {prop} has been revalidated "
+            f"by the following verified facts:\n{lined_facts}"
+        )
+        
+        return True
     
-    # facts_pattern = 
-    # facts_match = 
-    
-    
-    
-    lined_facts = "\n".join(verified_facts)
-    
-    print(
-        f"transcendental_diophantine1_back_enumeration: prop {prop} has been revalidated "
-        f"by the following verified facts:\n{lined_facts}"
-    )
-    
-    return True
+    except Exception as error:
+        print(error)
+        return False
