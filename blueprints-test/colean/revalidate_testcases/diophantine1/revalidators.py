@@ -10,9 +10,9 @@ __all__ = [
     "exhaust_mod_cycle",
     "compute_mod_add",
     "compute_mod_sub",
-    "transcendental_diophantine1_double_enumeration",
-    "transcendental_diophantine1_front_enumeration",
-    "transcendental_diophantine1_back_enumeration",
+    "diophantine1_double_enumeration",
+    "diophantine1_front_enumeration",
+    "diophantine1_back_enumeration",
 ]
 
 
@@ -443,7 +443,7 @@ def compute_mod_sub(
         return False
 
 
-def transcendental_diophantine1_double_enumeration(
+def diophantine1_double_enumeration(
     prop: str,
     verified_facts: List[str],
 )-> bool:
@@ -508,7 +508,7 @@ def transcendental_diophantine1_double_enumeration(
         
         if _verbose:
             print(
-                f"transcendental_diophantine1_double_enumeration: prop {prop} has been revalidated "
+                f"diophantine1_double_enumeration: prop {prop} has been revalidated "
                 f"by the following verified facts:\n{lined_facts}"
             )
         
@@ -519,7 +519,7 @@ def transcendental_diophantine1_double_enumeration(
         return False
 
 
-def transcendental_diophantine1_front_enumeration(
+def diophantine1_front_enumeration(
     prop: str,
     verified_facts: List[str],
 )-> bool:
@@ -583,7 +583,7 @@ def transcendental_diophantine1_front_enumeration(
         
         if _verbose:
             print(
-                f"transcendental_diophantine1_front_enumeration: prop {prop} has been revalidated "
+                f"diophantine1_front_enumeration: prop {prop} has been revalidated "
                 f"by the following verified facts:\n{lined_facts}"
             )
         
@@ -594,7 +594,7 @@ def transcendental_diophantine1_front_enumeration(
         return False
 
 
-def transcendental_diophantine1_back_enumeration(
+def diophantine1_back_enumeration(
     prop: str,
     verified_facts: List[str],
 )-> bool:
@@ -658,7 +658,7 @@ def transcendental_diophantine1_back_enumeration(
         
         if _verbose:
             print(
-                f"transcendental_diophantine1_back_enumeration: prop {prop} has been revalidated "
+                f"diophantine1_back_enumeration: prop {prop} has been revalidated "
                 f"by the following verified facts:\n{lined_facts}"
             )
         

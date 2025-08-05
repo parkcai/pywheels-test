@@ -1,6 +1,6 @@
 from os.path import sep as seperator
 from pywheels.blueprints.colean import CoLeanRechecker
-from .revalidate_testcases.transcendental_diophantine1.revalidators import *
+from .revalidate_testcases.diophantine1.revalidators import *
 
 
 def main():
@@ -18,16 +18,16 @@ def main():
             ("exhaust_mod_cycle", exhaust_mod_cycle),
             ("compute_mod_add", compute_mod_add),
             ("compute_mod_sub", compute_mod_sub),
-            ("transcendental_diophantine1_double_enumeration", transcendental_diophantine1_double_enumeration),
-            ("transcendental_diophantine1_front_enumeration", transcendental_diophantine1_front_enumeration),
-            ("transcendental_diophantine1_back_enumeration", transcendental_diophantine1_back_enumeration),
+            ("diophantine1_double_enumeration", diophantine1_double_enumeration),
+            ("diophantine1_front_enumeration", diophantine1_front_enumeration),
+            ("diophantine1_back_enumeration", diophantine1_back_enumeration),
         ]
     )
     
     valid = diophantine_lean_proxy.revalidate(
         lean_code = (
             f"blueprints-test{seperator}colean{seperator}"
-            f"revalidate_testcases{seperator}transcendental_diophantine1{seperator}lean_code.lean"
+            f"revalidate_testcases{seperator}diophantine1{seperator}lean_code.lean"
         ),
     )
     
