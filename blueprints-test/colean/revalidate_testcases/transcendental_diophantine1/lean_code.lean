@@ -1,5 +1,5 @@
 -- transcendental_diophantine1.lean
--- The “Type-I transcendental Diophantine equation” refers to equations of the form a ^ x + b = c ^ y in positive integers x and y, where a >= 2, b >= 1, and c >= 2 are fixed integers. While it is difficult to rigorously prove a general algorithm that takes arbitrary (a, b, c) and outputs a complete proof, I propose a heuristic algorithm that is intuitive and extensively validated in finite cases, mainly relying on modular arithmetic and the apparent randomness of primes. Under this approach, such equations fall into two major classes and seven subtypes, with one representative proof provided for each subtype in this file.
+-- The “Type-I transcendental Diophantine equation” refers to equations of the form a ^ x + b = c ^ y in positive integers x and y, where a >= 2, b >= 1, and c >= 2 are fixed integers. While it is difficult to rigorously prove a general algorithm that takes arbitrary (a, b, c) and outputs a complete proof, I propose a heuristic algorithm that is intuitive and extensively validated in finite cases, mainly relying on modular arithmetic and the apparent randomness of primes. Under this approach, such equations fall into two major classes and seven subtypes, with two representative equations provided for each subtype in this file.
 -- Note that these proofs do not fully rely on traditional Lean methods; instead, Lean serves as a skeleton, while many reusable reasoning primitives are declared using `Claim` and externally verified by the CoLean system in a second-pass revalidation. This is partly due to my limited understanding of Lean and a preference for keeping the document purely ASCII. Nonetheless, I believe the CoLean framework—using Lean as a scaffold and delegating complex inferences—has broader relevance for domains less amenable to full formalization, such as physics or philosophy. This file also serves as an early proof-of-concept and testbed for CoLean’s development.
 -- Eureka Lab, Zeyu Cai, 25/08/01.
 
@@ -14,6 +14,28 @@ axiom Claim (prop_to_claim : Prop)
   (revalidator : String)
   : prop_to_claim
 
+
+/-
+(Class I, Type i)   2 ^ x + 6 = 9 ^ y
+For positive integers x, y satisfying 2 ^ x + 6 = 9 ^ y,
+this is impossible, because it implies that 2 ^ x = 0 (mod 3).
+-/
+theorem diophantine1_2_6_9 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 2 ^ x + 6 = 9 ^ y) :
+  False
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  have h6 := Claim (9 ^ y % 3 = 0) [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 1, proof := h2},
+  ] "pow_mod_eq_zero"
+  have h7 : 2 ^ x % 3 = 0 := by omega
+  have h8 := Claim False [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h1},
+    {prop := 2 ^ x % 3 = 0, proof := h7}
+  ] "observe_mod_cycle"
+  exact h8
 
 /-
 (Class I, Type i)   3 ^ x + 6 = 8 ^ y
@@ -34,6 +56,29 @@ theorem diophantine1_3_6_8 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
     {prop := 3 ^ x % 2 = 0, proof := h7}
+  ] "observe_mod_cycle"
+  exact h8
+
+
+/-
+(Class I, Type ii)   2 ^ x + 4 = 7 ^ y
+For positive integers x, y satisfying 2 ^ x + 4 = 7 ^ y,
+this is impossible, because it implies that 7 ^ y = 0 (mod 2).
+-/
+theorem diophantine1_2_4_7 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 2 ^ x + 4 = 7 ^ y) :
+  False
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  have h6 := Claim (2 ^ x % 2 = 0) [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h1},
+  ] "pow_mod_eq_zero"
+  have h7 : 7 ^ y % 2 = 0 := by omega
+  have h8 := Claim False [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 1, proof := h2},
+    {prop := 7 ^ y % 2 = 0, proof := h7}
   ] "observe_mod_cycle"
   exact h8
 
@@ -59,6 +104,7 @@ theorem diophantine1_3_6_11 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   ] "observe_mod_cycle"
   exact h8
 
+
 /-
 (Class I, Type iii)   2 ^ x + 4 = 6 ^ y
 For positive integers x, y satisfying 2 ^ x + 4 = 6 ^ y,
@@ -74,11 +120,11 @@ theorem diophantine1_2_4_6 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h5 : y % 1 = 0 := by omega
   by_cases h6 : And (x >= 3) (y >= 3)
   have h7 := Claim (2 ^ x % 8 = 0) [
-    {prop :=  x % 1 = 0, proof := h4},
+    {prop := x % 1 = 0, proof := h4},
     {prop := x >= 3, proof := h6.left},
   ] "pow_mod_eq_zero"
   have h8 := Claim (6 ^ y % 8 = 0) [
-    {prop :=  y % 1 = 0, proof := h5},
+    {prop := y % 1 = 0, proof := h5},
     {prop := y >= 3, proof := h6.right},
   ] "pow_mod_eq_zero"
   omega
@@ -94,9 +140,45 @@ theorem diophantine1_2_4_6 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   exact h8
 
 /-
+(Class I, Type iii)   3 ^ x + 1 = 9 ^ y
+For positive integers x, y satisfying 3 ^ x + 1 = 9 ^ y,
+if x >= 1 and y >= 1,
+1 = 0 (mod 3), which is impossible.
+Therefore, x < 1 or y < 1.
+So 3 ^ x + 1 = 9 ^ y is impossible.
+-/
+theorem diophantine1_3_1_9 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 3 ^ x + 1 = 9 ^ y) :
+  False
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  by_cases h6 : And (x >= 1) (y >= 1)
+  have h7 := Claim (3 ^ x % 3 = 0) [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h6.left},
+  ] "pow_mod_eq_zero"
+  have h8 := Claim (9 ^ y % 3 = 0) [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 1, proof := h6.right},
+  ] "pow_mod_eq_zero"
+  omega
+  have h7 : Or (x <= 0) (y <= 0) := by omega
+  have h8 := Claim False [
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
+    {prop := 3 ^ x + 1 = 9 ^ y, proof := h3},
+    {prop := Or (x <= 0) (y <= 0), proof :=  h7},
+  ] "transcendental_diophantine1_double_enumeration"
+  exact h8
+
+
+/-
 (Class II, Front Mode, no magic prime)   7 ^ x + 3 = 10 ^ y
 For positive integers x, y satisfying 7 ^ x + 3 = 10 ^ y,
-if y >= 3, 7 ^ x = 5 (mod 8). However, this is impossible.
+if y >= 3, 7 ^ x = 5 (mod 8).
+However, this is impossible.
 Therefore, y < 3.
 Further examination shows that (x, y) = (1, 1).
 -/
@@ -108,7 +190,7 @@ theorem diophantine1_7_3_10 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   by_cases h6 : y >= 3
   have h7 := Claim (10 ^ y % 8 = 0) [
     {prop := y % 1 = 0, proof := h5},
-    {prop := y >= 3, proof := h6}
+    {prop := y >= 3, proof := h6},
   ] "pow_mod_eq_zero"
   have h8 : 7 ^ x % 8 = 5 := by omega
   have h9 := Claim False [
@@ -119,14 +201,51 @@ theorem diophantine1_7_3_10 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   apply False.elim h9
   have h7 : y <= 2 := by omega
   have h8 := Claim (List.Mem (x, y) [(1, 1)]) [
-    {prop := x % 1 = 0, proof := h4},
-    {prop := x >= 1, proof := h1},
-    {prop := y % 1 = 0, proof := h5},
-    {prop := y >= 1, proof := h2},
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
     {prop := 7 ^ x + 3 = 10 ^ y, proof := h3},
-    {prop := y <= 2, proof := h7}
+    {prop := y <= 2, proof := h7},
   ] "transcendental_diophantine1_back_enumeration"
   exact h8
+
+/-
+(Class II, Front Mode, no magic prime)   17 ^ x + 3 = 20 ^ y
+For positive integers x, y satisfying 17 ^ x + 3 = 20 ^ y,
+if y >= 4, 17 ^ x = 13 (mod 16).
+However, this is impossible.
+Therefore, y < 4.
+Further examination shows that (x, y) = (1, 1).
+-/
+theorem diophantine1_17_3_20 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 17 ^ x + 3 = 20 ^ y) :
+  List.Mem (x, y) [(1, 1)]
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  by_cases h6 : y >= 4
+  have h7 := Claim (20 ^ y % 16 = 0) [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 4, proof := h6},
+  ] "pow_mod_eq_zero"
+  have h8 : 17 ^ x % 16 = 13 := by omega
+  have h9 := Claim False [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h1},
+    {prop := 17 ^ x % 16 = 13, proof := h8}
+  ] "observe_mod_cycle"
+  apply False.elim h9
+  have h7 : y <= 3 := by omega
+  have h8 := Claim (List.Mem (x, y) [(1, 1)]) [
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
+    {prop := 17 ^ x + 3 = 20 ^ y, proof := h3},
+    {prop := y <= 3, proof := h7},
+  ] "transcendental_diophantine1_back_enumeration"
+  exact h8
+
 
 /-
 (Class II, Front Mode, with magic prime 19)   2 ^ x + 1 = 3 ^ y
@@ -180,6 +299,7 @@ theorem diophantine1_2_1_3 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   ] "transcendental_diophantine1_back_enumeration"
   exact h8
 
+
 /-
 (Class II, Back Mode, no magic prime)   2 ^ x + 5 = 11 ^ y
 For positive integers x, y satisfying 2 ^ x + 5 = 11 ^ y,
@@ -188,7 +308,7 @@ However, this is impossible.
 Therefore, x < 3.
 Further examination shows that 2 ^ x + 5 = 11 ^ y is impossible.
 -/
-theorem diophantine1_2_5_11 (x : Nat) (y : Nat) (h1 : x > 0) (h2 : y > 0) (h3 : 2 ^ x + 5 = 11 ^ y) :
+theorem diophantine1_2_5_11 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 2 ^ x + 5 = 11 ^ y) :
   False
   := by
   have h4 : x % 1 = 0 := by omega
@@ -202,7 +322,7 @@ theorem diophantine1_2_5_11 (x : Nat) (y : Nat) (h1 : x > 0) (h2 : y > 0) (h3 : 
   have h9 := Claim False [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
-    {prop := 11 ^ y % 8 = 5, proof := h8},
+    {prop := 11 ^ y % 8 = 5, proof := h8}
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : x <= 2 := by omega
@@ -215,6 +335,43 @@ theorem diophantine1_2_5_11 (x : Nat) (y : Nat) (h1 : x > 0) (h2 : y > 0) (h3 : 
     {prop := x <= 2, proof := h7},
   ] "transcendental_diophantine1_front_enumeration"
   exact h8
+
+/-
+(Class II, Back Mode, no magic prime)   3 ^ x + 5 = 7 ^ y
+For positive integers x, y satisfying 3 ^ x + 5 = 7 ^ y,
+if x >= 1, 7 ^ y = 2 (mod 3).
+However, this is impossible.
+Therefore, x < 1.
+So 3 ^ x + 5 = 7 ^ y is impossible.
+-/
+theorem diophantine1_3_5_7 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 3 ^ x + 5 = 7 ^ y) :
+  False
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  by_cases h6 : x >= 1
+  have h7 := Claim (3 ^ x % 3 = 0) [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h6},
+  ] "pow_mod_eq_zero"
+  have h8 : 7 ^ y % 3 = 2 := by omega
+  have h9 := Claim False [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 1, proof := h2},
+    {prop := 7 ^ y % 3 = 2, proof := h8}
+  ] "observe_mod_cycle"
+  apply False.elim h9
+  have h7 : x <= 0 := by omega
+  have h8 := Claim False [
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
+    {prop := 3 ^ x + 5 = 7 ^ y, proof := h3},
+    {prop := x <= 0, proof := h7},
+  ] "transcendental_diophantine1_front_enumeration"
+  exact h8
+
 
 /-
 (Class II, Back Mode, with magic prime 73)   3 ^ x + 7 = 2 ^ y
@@ -268,3 +425,15 @@ theorem diophantine1_3_7_2 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop := x <= 2, proof := h15},
   ] "transcendental_diophantine1_front_enumeration"
   exact h16
+
+
+/-
+(Class II, Back Mode, with magic prime 43)   7 ^ x + 5 = 3 ^ y
+For positive integers x, y satisfying 7 ^ x + 5 = 3 ^ y,
+if x >= 2, 3 ^ y = 5 (mod 49).
+So y = 29 (mod 42),
+Therefore, 3 ^ y = 18 (mod 43).
+So 7 ^ x = 13 (mod 43), but this is impossible.
+Therefore, x < 2.
+Further examination shows that 7 ^ x + 5 = 3 ^ y is impossible.
+-/
