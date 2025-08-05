@@ -4,6 +4,7 @@
 -- Eureka Lab, Zeyu Cai, 25/08/01.
 
 
+
 -- Claim Structure
 structure VerifiedFact where
   prop : Prop
@@ -13,6 +14,7 @@ axiom Claim (prop_to_claim : Prop)
   (verified_facts : List VerifiedFact)
   (revalidator : String)
   : prop_to_claim
+
 
 
 /-
@@ -60,6 +62,7 @@ theorem diophantine1_3_6_8 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   exact h8
 
 
+
 /-
 (Class I, Type ii)   2 ^ x + 4 = 7 ^ y
 For positive integers x, y satisfying 2 ^ x + 4 = 7 ^ y,
@@ -103,6 +106,7 @@ theorem diophantine1_3_6_11 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
     {prop := 11 ^ y % 3 = 0, proof := h7},
   ] "observe_mod_cycle"
   exact h8
+
 
 
 /-
@@ -172,6 +176,7 @@ theorem diophantine1_3_1_9 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop := Or (x <= 0) (y <= 0), proof :=  h7},
   ] "diophantine1_double_enumeration"
   exact h8
+
 
 
 /-
@@ -247,6 +252,7 @@ theorem diophantine1_17_3_20 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3
   exact h8
 
 
+
 /-
 (Class II, Front Mode, with magic prime 19)   2 ^ x + 1 = 3 ^ y
 For positive integers x, y satisfying 2 ^ x + 1 = 3 ^ y,
@@ -298,6 +304,60 @@ theorem diophantine1_2_1_3 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop := y <= 2, proof := h7},
   ] "diophantine1_back_enumeration"
   exact h8
+
+/-
+(Class II, Front Mode, with magic prime 2647)   2 ^ x + 89 = 91 ^ y
+For positive integers x, y satisfying 2 ^ x + 89 = 91 ^ y,
+if y >= 3, 2 ^ x = 254 (mod 343).
+So x = 76 (mod 147),
+which implies x = 76, 223, 370, 517, 664, 811, 958, 1105, 1252 (mod 1323).
+Therefore, 2 ^ x = 1994, 852, 1811, 957, 1447, 1513, 2343, 348, 1970 (mod 2647).
+So 91 ^ y = 2083, 941, 1900, 1046, 1536, 1602, 2432, 437, 2059 (mod 2647), but this is impossible.
+Therefore, y < 3.
+Further examination shows that (x, y) = (1, 1), (13, 2).
+-/
+theorem diophantine1_2_89_91 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 : 2 ^ x + 89 = 91 ^ y) :
+  List.Mem (x, y) [(1, 1), (13, 2)]
+  := by
+  have h4 : x % 1 = 0 := by omega
+  have h5 : y % 1 = 0 := by omega
+  by_cases h6 : y >= 3
+  have h7 := Claim (91 ^ y % 343 = 0) [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 3, proof := h6},
+  ] "pow_mod_eq_zero"
+  have h8 : 2 ^ x % 343 = 254 := by omega
+  have h9 := Claim (x % 147 = 76) [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h1},
+    {prop := 2 ^ x % 343 = 254, proof := h8},
+  ] "observe_mod_cycle"
+  have h10 := Claim (List.Mem (2 ^ x % 2647) [1994, 852, 1811, 957, 1447, 1513, 2343, 348, 1970]) [
+    {prop := x % 1 = 0, proof := h4},
+    {prop := x >= 1, proof := h1},
+    {prop := x % 147 = 76, proof := h9},
+  ] "utilize_mod_cycle"
+  have h11 := Claim (List.Mem (91 ^ y % 2647) [2083, 941, 1900, 1046, 1536, 1602, 2432, 437, 2059]) [
+    {prop := List.Mem (2 ^ x % 2647) [1994, 852, 1811, 957, 1447, 1513, 2343, 348, 1970], proof := h10},
+    {prop := 2 ^ x + 89 = 91 ^ y, proof := h3},
+  ] "compute_mod_add"
+  have h12 := Claim False [
+    {prop := y % 1 = 0, proof := h5},
+    {prop := y >= 1, proof := h2},
+    {prop := List.Mem (91 ^ y % 2647) [2083, 941, 1900, 1046, 1536, 1602, 2432, 437, 2059], proof := h11},
+  ] "exhaust_mod_cycle"
+  apply False.elim h12
+  have h7 : y <= 2 := by omega
+  have h8 := Claim (List.Mem (x, y) [(1, 1), (13, 2)]) [
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
+    {prop := 2 ^ x + 89 = 91 ^ y, proof := h3},
+    {prop := y <= 2, proof := h7},
+  ] "diophantine1_back_enumeration"
+  exact h8
+
 
 
 /-
@@ -371,6 +431,7 @@ theorem diophantine1_3_5_7 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop := x <= 0, proof := h7},
   ] "diophantine1_front_enumeration"
   exact h8
+
 
 
 /-
