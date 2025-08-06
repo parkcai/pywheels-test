@@ -27,7 +27,7 @@ def main():
     valid = diophantine_lean_proxy.revalidate(
         lean_code = (
             f"blueprints-test{seperator}colean{seperator}"
-            f"revalidate_testcases{seperator}diophantine1{seperator}lean_code.lean"
+            f"revalidate_testcases{seperator}diophantine1{seperator}transcendental_diophantine1.lean"
         ),
     )
     

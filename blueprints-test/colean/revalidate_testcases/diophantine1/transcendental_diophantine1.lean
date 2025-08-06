@@ -1,4 +1,4 @@
--- diophantine1.lean
+-- transcendental_diophantine1.lean
 -- The “Type-I transcendental Diophantine equation” refers to equations of the form a ^ x + b = c ^ y in positive integers x and y, where a >= 2, b >= 1, and c >= 2 are fixed integers. While it is difficult to rigorously prove a general algorithm that takes arbitrary (a, b, c) and outputs a complete proof, I propose a heuristic algorithm that is intuitive and extensively validated in finite cases, mainly relying on modular arithmetic and the apparent randomness of primes. Under this approach, such equations fall into two major classes and seven subtypes, with two representative equations provided for each subtype in this file.
 -- Note that these proofs do not fully rely on traditional Lean methods; instead, Lean serves as a skeleton, while many reusable reasoning primitives are declared using `Claim` and externally verified by the CoLean system in a second-pass revalidation. This is partly due to my limited understanding of Lean and a preference for keeping the document purely ASCII. Nonetheless, I believe the CoLean framework—using Lean as a scaffold and delegating complex inferences—has broader relevance for domains less amenable to full formalization, such as physics or philosophy. This file also serves as an early proof-of-concept and testbed for CoLean’s development.
 -- Eureka Lab, Zeyu Cai, 25/08/01.
@@ -35,7 +35,7 @@ theorem diophantine1_2_6_9 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h8 := Claim False [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
-    {prop := 2 ^ x % 3 = 0, proof := h7}
+    {prop := 2 ^ x % 3 = 0, proof := h7},
   ] "observe_mod_cycle"
   exact h8
 
@@ -49,7 +49,7 @@ theorem diophantine1_3_6_8 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   := by
   have h4 : x % 1 = 0 := by omega
   have h5 : y % 1 = 0 := by omega
-  have h6 := Claim (8 ^ y % 8 = 0) [
+  have h6 := Claim (8 ^ y % 2 = 0) [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
   ] "pow_mod_eq_zero"
@@ -57,7 +57,7 @@ theorem diophantine1_3_6_8 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h8 := Claim False [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
-    {prop := 3 ^ x % 2 = 0, proof := h7}
+    {prop := 3 ^ x % 2 = 0, proof := h7},
   ] "observe_mod_cycle"
   exact h8
 
@@ -81,7 +81,7 @@ theorem diophantine1_2_4_7 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h8 := Claim False [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
-    {prop := 7 ^ y % 2 = 0, proof := h7}
+    {prop := 7 ^ y % 2 = 0, proof := h7},
   ] "observe_mod_cycle"
   exact h8
 
@@ -139,7 +139,7 @@ theorem diophantine1_2_4_6 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop :=  y % 1 = 0, proof := h5},
     {prop :=  y >= 1, proof := h2},
     {prop := 2 ^ x + 4 = 6 ^ y, proof := h3},
-    {prop := Or (x <= 2) (y <= 2), proof :=  h7},
+    {prop := Or (x <= 2) (y <= 2), proof := h7},
   ] "diophantine1_double_enumeration"
   exact h8
 
@@ -173,7 +173,7 @@ theorem diophantine1_3_1_9 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
     {prop :=  y % 1 = 0, proof := h5},
     {prop :=  y >= 1, proof := h2},
     {prop := 3 ^ x + 1 = 9 ^ y, proof := h3},
-    {prop := Or (x <= 0) (y <= 0), proof :=  h7},
+    {prop := Or (x <= 0) (y <= 0), proof := h7},
   ] "diophantine1_double_enumeration"
   exact h8
 
@@ -201,7 +201,7 @@ theorem diophantine1_7_3_10 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   have h9 := Claim False [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
-    {prop := 7 ^ x % 8 = 5, proof := h8}
+    {prop := 7 ^ x % 8 = 5, proof := h8},
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : y <= 2 := by omega
@@ -237,7 +237,7 @@ theorem diophantine1_17_3_20 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3
   have h9 := Claim False [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
-    {prop := 17 ^ x % 16 = 13, proof := h8}
+    {prop := 17 ^ x % 16 = 13, proof := h8},
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : y <= 3 := by omega
@@ -291,7 +291,7 @@ theorem diophantine1_2_1_3 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h12 := Claim False [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
-    {prop := List.Mem (3 ^ y % 19) [0], proof := h11}
+    {prop := List.Mem (3 ^ y % 19) [0], proof := h11},
   ] "exhaust_mod_cycle"
   apply False.elim h12
   have h7 : y <= 2 := by omega
@@ -382,7 +382,7 @@ theorem diophantine1_2_5_11 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 
   have h9 := Claim False [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
-    {prop := 11 ^ y % 8 = 5, proof := h8}
+    {prop := 11 ^ y % 8 = 5, proof := h8},
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : x <= 2 := by omega
@@ -418,7 +418,7 @@ theorem diophantine1_3_5_7 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h9 := Claim False [
     {prop := y % 1 = 0, proof := h5},
     {prop := y >= 1, proof := h2},
-    {prop := 7 ^ y % 3 = 2, proof := h8}
+    {prop := 7 ^ y % 3 = 2, proof := h8},
   ] "observe_mod_cycle"
   apply False.elim h9
   have h7 : x <= 0 := by omega
@@ -473,19 +473,19 @@ theorem diophantine1_3_7_2 (x : Nat) (y : Nat) (h1 : x >= 1) (h2 : y >= 1) (h3 :
   have h12 := Claim False [
     {prop := x % 1 = 0, proof := h4},
     {prop := x >= 1, proof := h1},
-    {prop := List.Mem (3 ^ x % 73) [48], proof := h11}
+    {prop := List.Mem (3 ^ x % 73) [48], proof := h11},
   ] "exhaust_mod_cycle"
   apply False.elim h12
-  have h15 : x <= 2 := by omega
-  have h16 := Claim (List.Mem (x, y) [(2, 4)]) [
-    {prop := x % 1 = 0, proof := h4},
-    {prop := x >= 1, proof := h1},
-    {prop := y % 1 = 0, proof := h5},
-    {prop := y >= 1, proof := h2},
+  have h7 : x <= 2 := by omega
+  have h8 := Claim (List.Mem (x, y) [(2, 4)]) [
+    {prop :=  x % 1 = 0, proof := h4},
+    {prop :=  x >= 1, proof := h1},
+    {prop :=  y % 1 = 0, proof := h5},
+    {prop :=  y >= 1, proof := h2},
     {prop := 3 ^ x + 7 = 2 ^ y, proof := h3},
-    {prop := x <= 2, proof := h15},
+    {prop := x <= 2, proof := h7},
   ] "diophantine1_front_enumeration"
-  exact h16
+  exact h8
 
 /-
 (Class II, Back Mode, with magic prime 17497)   3 ^ x + 10 = 13 ^ y
