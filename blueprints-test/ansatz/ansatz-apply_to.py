@@ -52,7 +52,7 @@ if __name__ == "__main__":
         numeric_ansatz_user = numeric_ansatz_user,
         param_ranges = param_ranges,
         trial_num = 100,
-        mode = "random",
+        method = "random",
         do_minimize = True,
     )
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         numeric_ansatz_user = numeric_ansatz_user,
         param_ranges = param_ranges,
         trial_num = 1,
-        mode = "optimize",
+        method = "L-BFGS-B",
         do_minimize = True,
     )
 
