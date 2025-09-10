@@ -3,9 +3,8 @@ from pywheels.llm_tools.get_answer import get_answer
 
 def main():
     
-    model = "Qwen_Plus"
-       
     # test simple 
+    model = "Qwen-Max"
     prompt = input("[Me] ")
     llm_answer = get_answer(
         model = model,
@@ -14,12 +13,14 @@ def main():
     print(f"[{model}] {llm_answer}")
     
     # test elaborate
+    model = "Qwen-VL-Max"
     prompt = input(f"[Me, attaching a picture about a dog drinking water near a river]\n")
     llm_answer = get_answer(
         prompt = prompt,
         model = model,
-        system_prompt = "Please answer the following question in an ironic way.",
-        images = [],
+        system_prompt = "<image> Please respond to the following sentence in an ironic way.",
+        images = ["llm_tools-test/dog.png"],
+        image_placeholder = "<image>",
         temperature = 1.0,
         top_p = 0.5,
         max_completion_tokens = 4096,
