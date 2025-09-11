@@ -18,7 +18,7 @@ def main():
     llm_answer = get_answer(
         prompt = prompt,
         model = model,
-        system_prompt = "<image> Please respond to the following sentence in an ironic way.",
+        system_prompt = "Please respond to the following sentence in a natural way.",
         images = ["llm_tools-test/dog.png"],
         image_placeholder = "<image>",
         temperature = 1.0,
