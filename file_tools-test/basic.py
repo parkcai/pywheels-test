@@ -18,8 +18,8 @@ def main():
     print("Temp file 1 has been created."); sleep(6)
     
     copy_file(
-        source_file_path = "file_tools-test/temp_folder/temp_file1.txt",
-        destination_file_path = "file_tools-test/temp_folder/temp_file2.txt",
+        source_path = "file_tools-test/temp_folder/temp_file1.txt",
+        destination_path = "file_tools-test/temp_folder/temp_file2.txt",
     )
     
     print("Temp file 1 has been copied to temp file 2."); sleep(6)
