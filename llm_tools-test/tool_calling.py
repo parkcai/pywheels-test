@@ -20,37 +20,31 @@ def _run_python(
         output = stdout_capture.getvalue()
         if not output:
             output = "代码已执行，但没有产生 stdout 输出。请使用 print() 来返回结果。"
-            if verbose: print(f"模型进行了一次工具调用！工具调用结果：\n{output}")
+            if verbose: print(f"模型进行了一次工具调用！\n尝试运行的代码：\n{code}\n工具调用结果：\n{output}")
             return output
-        if verbose: print(f"模型进行了一次工具调用！工具调用结果：\n{output}")
+        if verbose: print(f"模型进行了一次工具调用！\n尝试运行的代码：\n{code}\n工具调用结果：\n{output}")
         return output
     except Exception as error:
         output = f"代码执行失败: {error}\n调用栈：\n{traceback.format_exc()}"
-        if verbose: print(f"模型进行了一次工具调用！工具调用结果：\n{output}")
+        if verbose: print(f"模型进行了一次工具调用！\n尝试运行的代码：\n{code}\n工具调用结果：\n{output}")
         return output
 
 
 python_tool = {
-    "type": "function",
-    "function": {
-        "name": "execute_python_code",
-        "description": (
-            "执行一个 Python 代码块并返回其 stdout 输出。"
-            "用于需要数值计算、解方程或调用库（如 scipy, numpy）的复杂数学问题。"
-            "你必须使用 `print()` 语句来返回最终的数值结果。"
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "description": (
-                        "要执行的 Python 代码字符串。"
-                        "例如: 'import numpy as np; print(np.pi)'"
-                    ),
-                }
-            },
-            "required": ["code"],
+    "name": "execute_python_code",
+    "description": (
+        "执行一个 Python 代码块并返回其 stdout 输出。"
+        "用于需要数值计算、解方程或调用库（如 scipy, numpy）的复杂数学问题。"
+        "你必须使用 `print()` 语句来返回最终的数值结果。"
+    ),
+    "parameters": {
+        "code": {
+            "type": "string",
+            "description": (
+                "要执行的 Python 代码字符串。"
+                "例如: 'import numpy as np; print(np.pi)'"
+            ),
+            "required": True,
         },
     },
     "implementation": _run_python,
@@ -59,7 +53,7 @@ python_tool = {
 
 def main():
     
-    model = get_string_input("请输入要使用的模型：", "Qwen-Max")
+    model = get_string_input("请输入要使用的模型：", "GPT-5")
     prompt = (
         "请求出 zeta(x_0) 的数值，放在 \\boxed{} 中，四舍五入，保留到小数点后 5 位；"
         "其中，x_0 是方程 x = 3 sin x 的最小正根，"
