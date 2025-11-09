@@ -31,30 +31,30 @@ def _run_python(
 
 
 python_tool = {
-        "type": "function",
-        "function": {
-            "name": "execute_python_code",
-            "description": (
-                "执行一个 Python 代码块并返回其 stdout 输出。"
-                "用于需要数值计算、解方程或调用库（如 scipy, numpy）的复杂数学问题。"
-                "你必须使用 `print()` 语句来返回最终的数值结果。"
-            ),
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "string",
-                        "description": (
-                            "要执行的 Python 代码字符串。"
-                            "例如: 'import numpy as np; print(np.pi)'"
-                        ),
-                    }
-                },
-                "required": ["code"],
+    "type": "function",
+    "function": {
+        "name": "execute_python_code",
+        "description": (
+            "执行一个 Python 代码块并返回其 stdout 输出。"
+            "用于需要数值计算、解方程或调用库（如 scipy, numpy）的复杂数学问题。"
+            "你必须使用 `print()` 语句来返回最终的数值结果。"
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "description": (
+                        "要执行的 Python 代码字符串。"
+                        "例如: 'import numpy as np; print(np.pi)'"
+                    ),
+                }
             },
+            "required": ["code"],
         },
-        "implementation": _run_python,
-    }
+    },
+    "implementation": _run_python,
+}
 
 
 def main():
